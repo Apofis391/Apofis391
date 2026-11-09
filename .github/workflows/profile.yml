@@ -1,0 +1,41 @@
+name: Profile cards
+
+on:
+  schedule:
+    - cron: "0 6 * * *" # daily
+  workflow_dispatch:
+  push:
+    branches: [main]
+
+jobs:
+  stats:
+    name: GitHub statistics cards
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: vn7n24fzkq/github-profile-summary-cards@release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          USERNAME: ${{ github.repository_owner }}
+
+  snake:
+    name: Contribution snake
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: Platane/snk/svg-only@v3
+        with:
+          github_user_name: ${{ github.repository_owner }}
+          outputs: |
+            dist/github-snake.svg?color_snake=#0071E3&color_dots=#ebedf0,#c6e0ff,#80b8ff,#3d8eff,#0071e3
+            dist/github-snake-dark.svg?palette=github-dark&color_snake=#2997FF&color_dots=#161b22,#0b3a66,#0f5aa3,#1a7ae0,#2997ff
+
+      - uses: crazy-max/ghaction-github-pages@v3.1.0
+        with:
+          target_branch: output
+          build_dir: dist
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
